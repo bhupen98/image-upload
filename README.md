@@ -100,3 +100,50 @@ image: new FormControl(null,{asyncValidators:[mimeType]})
 
 ```
 
+## Server Side Upload
+We can't extract an image on server with body-parser,so we neeed to install different package called multer.
+
+**Installation**<br>
+``` yarn add multer ```<br>
+**Implementation**
+``` javascript
+const multer = require('multer');
+const express = require('express');
+
+const router = express.Router();
+
+//mime type map 
+const MIME_TYPE_MAP = {
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    'image/jpg': 'jpg'
+};
+
+//multer storage
+const storage  = multer.diskStorage({
+   destination:(req,file,cb) =>{
+       const isValid = MIME_TYPE_MAP[file];
+        let error = new Error("Invalid mime type");
+        if(isValid){
+            error = null;
+        }
+       cb(error, "backend/images");
+   },
+
+   filename:(req, file, cb) => {
+       const name = file.originalname.toLowerCase().split(' ').join('-')
+       const ext= MIME_TYPE_MAP[file.mimetype];
+       cb(null, name + '-' + Date.now() + '.' + ext );
+   }
+});
+
+router.post('',multer({storage}).single('image),(req,res,next)=>{
+})
+```
+## Uploading files
+JSON can't include a file, so instead of sending json as a body to the server, i will now send a form data. Form data is basically a data format which allows us to combine a text value and file values. Now, let's implement it.
+``` typescript
+   const postData = new FormData();
+   postData.append('title',title);
+   postData.append('content',content);
+```
