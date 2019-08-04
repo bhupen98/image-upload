@@ -137,13 +137,29 @@ const storage  = multer.diskStorage({
    }
 });
 
-router.post('',multer({storage}).single('image),(req,res,next)=>{
+router.post('',multer({storage:storage}).single('image),(req,res,next)=>{
 })
 ```
 ## Uploading files
 JSON can't include a file, so instead of sending json as a body to the server, i will now send a form data. Form data is basically a data format which allows us to combine a text value and file values. Now, let's implement it.
 ``` typescript
+   saveData(title:string,content:string,image:File){
    const postData = new FormData();
    postData.append('title',title);
    postData.append('content',content);
+   postData.append('image',image);
+   this.http.post('http://localhost:3000/api/create',postData)
+   }
+```
+
+## Working with the file url
+``` javascript
+router.post('',multer({storage:storage}).single(req,res, next)=>{
+  const url = req.protocol + '://' + req.get("host");
+  const post = new Post({
+  title:req.body.title,
+  content:req.body.content,
+  imagePath:url + '/images/'
+  })
+})
 ```
