@@ -159,7 +159,17 @@ router.post('',multer({storage:storage}).single(req,res, next)=>{
   const post = new Post({
   title:req.body.title,
   content:req.body.content,
-  imagePath:url + '/images/'
+  imagePath:url + '/images/' + req.file.filename
   })
 })
+```
+
+## fetching images on frontend
+Before fetching image in frontend,we have to add extra middleware to map the '/images/' url with a 'backend/images' folder.<br>
+Lets add it in our app.js file, 
+``` javascript
+const path = require('path');
+const express = require('express');
+const app = express();
+app.use('/images',express.static(path.join('backend/images')));
 ```
